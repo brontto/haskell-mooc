@@ -191,7 +191,11 @@ step k x = if x<k then Right (2*x) else Left x
 -- Hint! This is a great use for list comprehensions
 
 joinToLength :: Int -> [String] -> [String]
-joinToLength = todo
+joinToLength x xs = [s | s <- (fullList xs), length s == x]
+
+fullList :: [String] -> [String]
+fullList xs = [x ++ y | x <- xs, y <- xs]
+
 
 ------------------------------------------------------------------------------
 -- Ex 10: implement the operator +|+ that returns a list with the first
@@ -204,6 +208,12 @@ joinToLength = todo
 --   [1,2,3] +|+ [4,5,6]  ==> [1,4]
 --   [] +|+ [True]        ==> [True]
 --   [] +|+ []            ==> []
+
+(+|+) :: [a] -> [a] -> [a]
+[] +|+ [] = []
+[] +|+ (y:_) = [y] 
+(x:_) +|+ [] = [x]
+(x:xs) +|+ (y:ys) = [x,y]
 
 
 ------------------------------------------------------------------------------
@@ -221,7 +231,7 @@ joinToLength = todo
 --   sumRights [Left "bad!", Left "missing"]         ==>  0
 
 sumRights :: [Either a Int] -> Int
-sumRights = todo
+sumRights xs = sum . rights $ xs
 
 ------------------------------------------------------------------------------
 -- Ex 12: recall the binary function composition operation
