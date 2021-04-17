@@ -307,14 +307,12 @@ multiApp' fx x = (head fx) x : multiApp' (tail fx) x
 
 interpreter :: [String] -> [String]
 interpreter commands = interpreter' 0 0 commands
-
-
-interpreter' :: Int -> Int -> [String] -> [String]
-interpreter' x y [] = []
-interpreter' x y commands
-    |head commands == "up" = interpreter' x (y+1) (tail commands) 
-    |head commands == "down" = interpreter' x (y-1) (tail commands)
-    |head commands == "right" = interpreter' (x+1) y (tail commands)
-    |head commands == "left" = interpreter' (x-1) y (tail commands)
-    |head commands == "printX" = show x : interpreter' x y (tail commands)
-    |head commands == "printY" = show y : interpreter' x y (tail commands)
+    where interpreter' x y [] = []
+          interpreter' x y commands  
+            |head commands == "up" = interpreter' x (y+1) (tail commands) 
+            |head commands == "down" = interpreter' x (y-1) (tail commands)
+            |head commands == "right" = interpreter' (x+1) y (tail commands)
+            |head commands == "left" = interpreter' (x-1) y (tail commands)
+            |head commands == "printX" = show x : interpreter' x y (tail commands)
+            |head commands == "printY" = show y : interpreter' x y (tail commands)
+            
