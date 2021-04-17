@@ -247,7 +247,9 @@ sumRights xs = sum . rights $ xs
 --   multiCompose [(3*), (2^), (+1)] 0 ==> 6
 --   multiCompose [(+1), (2^), (3*)] 0 ==> 2
 
-multiCompose fs = todo
+
+multiCompose [] fs = fs
+multiCompose xs fs = (head xs) $ multiCompose (tail xs) fs
 
 ------------------------------------------------------------------------------
 -- Ex 13: let's consider another way to compose multiple functions. Given
@@ -266,7 +268,10 @@ multiCompose fs = todo
 --   multiApp reverse [tail, take 2, reverse] "foo" ==> ["oof","fo","oo"]
 --   multiApp concat [take 3, reverse] "race" ==> "racecar"
 
-multiApp = todo
+multiApp f fx x = f $ multiApp' fx x
+
+multiApp' [] x = []
+multiApp' fx x = (head fx) x : multiApp' (tail fx) x
 
 ------------------------------------------------------------------------------
 -- Ex 14: in this exercise you get to implement an interpreter for a
@@ -301,4 +306,15 @@ multiApp = todo
 -- function, the surprise won't work.
 
 interpreter :: [String] -> [String]
-interpreter commands = todo
+interpreter commands = interpreter' 0 0 commands
+
+
+interpreter' :: Int -> Int -> [String] -> [String]
+interpreter' x y [] = []
+interpreter' x y commands
+    |head commands == "up" = interpreter' x (y+1) (tail commands) 
+    |head commands == "down" = interpreter' x (y-1) (tail commands)
+    |head commands == "right" = interpreter' (x+1) y (tail commands)
+    |head commands == "left" = interpreter' (x-1) y (tail commands)
+    |head commands == "printX" = show x : interpreter' x y (tail commands)
+    |head commands == "printY" = show y : interpreter' x y (tail commands)
