@@ -51,7 +51,12 @@ buildList start count end
 -- Ps. you'll probably need a recursive helper function
 
 sums :: Int -> [Int]
-sums i = todo
+sums i = sums' i 0 1
+
+sums' :: Int -> Int -> Int -> [Int]
+sums' i c s = if s > i then [] else (c+s) : sums' i (c+s) (s+1)
+
+
 ------------------------------------------------------------------------------
 -- Ex 3: define a function mylast that returns the last value of the
 -- given list. For an empty list, a provided default value is
@@ -64,7 +69,9 @@ sums i = todo
 --   mylast 0 [1,2,3] ==> 3
 
 mylast :: a -> [a] -> a
-mylast def xs = todo
+mylast def [] = def
+mylast def (s:[]) = s
+mylast def (s:xs) = mylast def xs
 
 ------------------------------------------------------------------------------
 -- Ex 4: safe list indexing. Define a function indexDefault so that
@@ -85,7 +92,11 @@ mylast def xs = todo
 --   indexDefault ["a","b","c"] (-1) "d" ==> "d"
 
 indexDefault :: [a] -> Int -> a -> a
-indexDefault xs i def = todo
+indexDefault [] i def = def
+indexDefault (s:xs) 0 def = s 
+indexDefault (s:xs) i def = indexDefault xs (i-1) def
+
+--indexDefault xs i def = todo
 
 ------------------------------------------------------------------------------
 -- Ex 5: define a function that checks if the given list is in
@@ -93,8 +104,14 @@ indexDefault xs i def = todo
 --
 -- Use pattern matching and recursion to iterate through the list.
 
-sorted :: [Int] -> Bool
-sorted xs = todo
+sorted :: [Int] -> Bool 
+sorted [] = True
+sorted (s:[]) = True
+sorted (s:xs) = sorted' s xs
+    where 
+        sorted' i [] = True
+        sorted' i (s:xs) = if s >= i then sorted' s xs else False
+
 
 ------------------------------------------------------------------------------
 -- Ex 6: compute the partial sums of the given list like this:
@@ -106,7 +123,13 @@ sorted xs = todo
 -- Use pattern matching and recursion (and the list constructors : and [])
 
 sumsOf :: [Int] -> [Int]
-sumsOf xs = todo
+sumsOf [] = []
+sumsOf (s:[]) = [s]
+sumsOf (s:xs) = s : sumsOf' s xs
+    where 
+        sumsOf' l [] = [] 
+        sumsOf' l (s:[]) = [l+s]
+        sumsOf' l (s:xs) = (l+s) : sumsOf' (s+l) xs
 
 ------------------------------------------------------------------------------
 -- Ex 7: implement the function merge that merges two sorted lists of
