@@ -81,9 +81,6 @@ mylast def (s:xs) = mylast def xs
 --
 -- Use only pattern matching and recursion (and the list constructors : and [])
 --
--- This time, implement indexDefault using pattern matching and
--- recursion.
---
 -- Examples:
 --   indexDefault [True] 1 False         ==>  False
 --   indexDefault [10,20,30] 0 7         ==>  10
