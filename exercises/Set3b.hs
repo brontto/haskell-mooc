@@ -142,8 +142,12 @@ sumsOf (s:xs) = s : sumsOf' s xs
 --   merge [1,1,6] [1,2]   ==> [1,1,1,2,6]
 
 merge :: [Int] -> [Int] -> [Int]
-merge xs ys = todo
-
+merge [] [] = []
+merge [] (y:ys) = y : merge [] ys
+merge (x:xs) [] = x : merge xs []
+merge (x:xs) (y:ys)
+    | x <= y = x : merge xs (y:ys) 
+    | x > y = y : merge (x:xs) ys
 ------------------------------------------------------------------------------
 -- Ex 8: define the function mymaximum that takes a list and a
 -- function bigger :: a -> a -> Bool and returns the
@@ -161,8 +165,14 @@ merge xs ys = todo
 --     ==> [1,2]
 
 mymaximum :: (a -> a -> Bool) -> a -> [a] -> a
-mymaximum bigger initial xs = todo
+mymaximum bigger initial [] = initial
+mymaximum bigger initial xs = if bigger initial h then initial else h
+    where h = mymaxhelper bigger xs
 
+mymaxhelper :: (a -> a -> Bool) -> [a] -> a
+mymaxhelper bigger (x:[]) = x 
+mymaxhelper bigger (x:xs) = if bigger x l then x else l
+    where l = (mymaxhelper bigger xs)
 ------------------------------------------------------------------------------
 -- Ex 9: define a version of map that takes a two-argument function
 -- and two lists. Example:
@@ -175,7 +185,9 @@ mymaximum bigger initial xs = todo
 -- Use recursion and pattern matching. Do not use any library functions.
 
 map2 :: (a -> b -> c) -> [a] -> [b] -> [c]
-map2 f as bs = todo
+map2 f [] bs = []
+map2 f as [] = []
+map2 f (a:as) (b:bs) = f a b : map2 f as bs
 
 ------------------------------------------------------------------------------
 -- Ex 10: implement the function maybeMap, which works a bit like a
@@ -199,4 +211,15 @@ map2 f as bs = todo
 --   ==> []
 
 maybeMap :: (a -> Maybe b) -> [a] -> [b]
-maybeMap f xs = todo
+maybeMap f [] = []
+maybeMap f (x:xs) 
+    |helperX (f x) = helperY x : maybeMap f xs
+    |otherwise = maybeMap f xs
+
+helperX :: Maybe a -> Bool   
+helperX (Just x) = True
+helperX Nothing = False
+
+helperY :: Maybe a -> b
+helperY (Just x) = x
+helperY Nothing = 1
