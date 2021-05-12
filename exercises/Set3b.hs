@@ -209,14 +209,7 @@ map2 f (a:as) (b:bs) = f a b : map2 f as bs
 
 maybeMap :: (a -> Maybe b) -> [a] -> [b]
 maybeMap f [] = []
-maybeMap f (x:xs) 
-    |helperX (f x) = helperY x : maybeMap f xs
-    |otherwise = maybeMap f xs
+maybeMap f (x:xs) = case f x of Nothing -> maybeMap f xs
+                                Just x -> x : maybeMap f xs
 
-helperX :: Maybe a -> Bool   
-helperX (Just x) = True
-helperX Nothing = False
 
-helperY :: Maybe a -> b
-helperY (Just x) = x
-helperY Nothing = 1
