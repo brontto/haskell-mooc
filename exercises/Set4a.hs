@@ -85,8 +85,6 @@ rangeOf :: Ord a => Num a => [a] -> a
 rangeOf xs = maximum xs - minimum xs
 
 
-
-
 ------------------------------------------------------------------------------
 -- Ex 5: given a list of lists, return the longest list. If there
 -- are multiple lists of the same length, return the list that has
@@ -101,7 +99,12 @@ rangeOf xs = maximum xs - minimum xs
 --   longest [[1,2,3],[4,5],[6]] ==> [1,2,3]
 --   longest ["bcd","def","ab"] ==> "bcd"
 
-longest = todo
+longest :: Ord a => Num a => [[a]] -> [a]
+longest xs = head (getSmallest (maximumBy ordLen xs)) 
+    where ordLen a b = compare (length a) (length b)
+
+getSmallest xs = sortBy (\x y -> compare (head x) (head y)) xs
+
 
 ------------------------------------------------------------------------------
 -- Ex 6: Implement the function incrementKey, that takes a list of
