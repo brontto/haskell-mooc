@@ -99,11 +99,14 @@ rangeOf xs = maximum xs - minimum xs
 --   longest [[1,2,3],[4,5],[6]] ==> [1,2,3]
 --   longest ["bcd","def","ab"] ==> "bcd"
 
-longest :: Ord a => Num a => [[a]] -> [a]
-longest xs = head (getSmallest (maximumBy ordLen xs)) 
-    where ordLen a b = compare (length a) (length b)
+longest :: Ord a => [[a]] -> [a]
+longest xs = head (sortBy mySort xs)
+    
+mySort a b 
+    | length a < length b = GT
+    | length a > length b = LT
+    | length a == length b = compare (head a) (head b)   
 
-getSmallest xs = sortBy (\x y -> compare (head x) (head y)) xs
 
 
 ------------------------------------------------------------------------------
