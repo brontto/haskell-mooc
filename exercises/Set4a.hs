@@ -180,9 +180,11 @@ winner scores player1 player2
 --     ==> Map.fromList [(False,3),(True,1)]
 
 freqs :: (Eq a, Ord a) => [a] -> Map.Map a Int
-freqs xs = Map.fromList foldr apufold True xs 
+freqs [] = Map.fromList []
+freqs (x:xs) = Map.insertWith (+) x 1 (freqs xs)
 
-apufold a b = if a == b then 1 else 0
+
+
 
 ------------------------------------------------------------------------------
 -- Ex 10: recall the withdraw example from the course material. Write a
