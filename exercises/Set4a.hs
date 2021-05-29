@@ -180,12 +180,12 @@ winner scores player1 player2
 --     ==> Map.fromList [(False,3),(True,1)]
 
 freqs :: (Eq a, Ord a) => [a] -> Map.Map a Int
-freqs = foldr (\ x -> Map.alter alterHelper x) (Map.fromList [])
+freqs xs = foldr (\ x -> Map.alter alterHelper x) (Map.fromList []) xs
+
 
 alterHelper :: Num p => Maybe p -> Maybe p
 alterHelper (Just x) = Just (x+1)
 alterHelper Nothing = Just 1
-
 
 ------------------------------------------------------------------------------
 -- Ex 10: recall the withdraw example from the course material. Write a
