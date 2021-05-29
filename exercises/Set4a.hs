@@ -101,11 +101,11 @@ rangeOf xs = maximum xs - minimum xs
 
 longest :: Ord a => [[a]] -> [a]
 longest xs = head (sortBy mySort xs)
-    
-mySort a b 
+
+mySort a b
     | length a < length b = GT
     | length a > length b = LT
-    | length a == length b = compare (head a) (head b)   
+    | length a == length b = compare (head a) (head b)
 
 
 
@@ -125,7 +125,7 @@ mySort a b
 
 incrementKey :: Eq k => Num v => k -> [(k,v)] -> [(k,v)]
 incrementKey a [] = []
-incrementKey a (x:xd) = if fst x == a then (fst x, (snd x) + 1) : incrementKey a xd else (fst x, snd x) : incrementKey a xd 
+incrementKey a (x:xd) = if fst x == a then (fst x, (snd x) + 1) : incrementKey a xd else (fst x, snd x) : incrementKey a xd
 
 ------------------------------------------------------------------------------
 -- Ex 7: compute the average of a list of values of the Fractional
@@ -163,7 +163,7 @@ winner scores player1 player2
     | splayer1 > splayer2 = player1
     | splayer1 < splayer2 = player2
     | otherwise = player1
-        where 
+        where
             splayer1 = Map.findWithDefault 0 player1 scores
             splayer2 = Map.findWithDefault 0 player2 scores
 
@@ -180,10 +180,11 @@ winner scores player1 player2
 --     ==> Map.fromList [(False,3),(True,1)]
 
 freqs :: (Eq a, Ord a) => [a] -> Map.Map a Int
-freqs [] = Map.fromList []
-freqs (x:xs) = Map.insertWith (+) x 1 (freqs xs)
+freqs = foldr (\ x -> Map.alter alterHelper x) (Map.fromList [])
 
-
+alterHelper :: Num p => Maybe p -> Maybe p
+alterHelper (Just x) = Just (x+1)
+alterHelper Nothing = Just 1
 
 
 ------------------------------------------------------------------------------
