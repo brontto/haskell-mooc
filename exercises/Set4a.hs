@@ -213,7 +213,16 @@ alterHelper Nothing = Just 1
 --     ==> fromList [("Bob",100),("Mike",50)]
 
 transfer :: String -> String -> Int -> Map.Map String Int -> Map.Map String Int
-transfer from to amount bank = todo
+transfer from to amount bank
+        |Map.notMember from bank = bank
+        |Map.notMember to bank = bank
+        |amount < 0 = bank
+        |amount > transhelper (Map.lookup from bank) = bank
+        |otherwise = Map.adjust (\x-> x+amount) to (Map.adjust (\x -> x-amount) from bank)
+
+transhelper :: Num a => Maybe a -> a
+transhelper (Just x) = x
+transhelper Nothing = -1
 
 ------------------------------------------------------------------------------
 -- Ex 11: given an Array and two indices, swap the elements in the indices.
