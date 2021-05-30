@@ -232,7 +232,7 @@ transhelper Nothing = -1
 --         ==> array (1,4) [(1,"one"),(2,"three"),(3,"two"),(4,"four")]
 
 swap :: Ix i => i -> i -> Array i a -> Array i a
-swap i j arr = todo
+swap i j arr = arr // [(i ,(arr ! j)), (j , (arr ! i))]
 
 ------------------------------------------------------------------------------
 -- Ex 12: given an Array, find the index of the largest element. You
@@ -243,4 +243,10 @@ swap i j arr = todo
 -- Hint: check out Data.Array.indices or Data.Array.assocs
 
 maxIndex :: (Ix i, Ord a) => Array i a -> i
-maxIndex = todo
+maxIndex arr = maxIndexHelper ((indices arr) !! 0) (indices arr) arr
+
+maxIndexHelper :: (Ix i, Ord a) => i -> [i] -> Array i a -> i
+maxIndexHelper a [] arr = a  
+maxIndexHelper a (i:inx) arr
+        |arr ! a < arr ! i = maxIndexHelper i inx arr
+        |otherwise = maxIndexHelper a inx arr 
