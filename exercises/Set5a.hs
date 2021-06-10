@@ -98,27 +98,27 @@ setAge age (PersonUndefined a n) = PersonUndefined age n
 --   getY (up (up origin))    ==> 2
 --   getX (up (right origin)) ==> 1
 
-data Position = PositionUndefined
+data Position = PositionUndefined Int Int 
 
 -- origin is a Position value with x and y set to 0
 origin :: Position
-origin = todo
+origin = (PositionUndefined 0 0) 
 
 -- getX returns the x of a Position
 getX :: Position -> Int
-getX = todo
+getX (PositionUndefined x y) = x
 
 -- getY returns the y of a position
 getY :: Position -> Int
-getY = todo
+getY (PositionUndefined x y) = y 
 
 -- up increases the y value of a position by one
 up :: Position -> Position
-up = todo
+up (PositionUndefined x y) = PositionUndefined x (y+1)
 
 -- right increases the x value of a position by one
 right :: Position -> Position
-right = todo
+right (PositionUndefined x y) = PositionUndefined (x+1) y
 
 ------------------------------------------------------------------------------
 -- Ex 6: Here's a datatype that represents a student. A student can
@@ -133,8 +133,9 @@ data Student = Freshman | NthYear Int | Graduated
 -- graduated student stays graduated even if he studies.
 
 study :: Student -> Student
-study = todo
-
+study Freshman = NthYear 1
+study (NthYear x) = if x >= 7 then Graduated else NthYear (x+1) 
+study _ = Graduated
 ------------------------------------------------------------------------------
 -- Ex 7: define a datatype UpDown that represents a counter that can
 -- either be in increasing or decreasing mode. Also implement the
@@ -152,26 +153,28 @@ study = todo
 -- get (tick (tick (toggle (tick zero))))
 --   ==> -1
 
-data UpDown = UpDownUndefined1 | UpDownUndefined2
+data UpDown = UpDownUndefined1 Int | UpDownUndefined2 Int
 
 -- zero is an increasing counter with value 0
 zero :: UpDown
-zero = todo
+zero = UpDownUndefined1 0
 
 -- get returns the counter value
 get :: UpDown -> Int
-get ud = todo
+get (UpDownUndefined1 x) = x
+get (UpDownUndefined2 x) = x
 
 -- tick increases an increasing counter by one or decreases a
 -- decreasing counter by one
 tick :: UpDown -> UpDown
-tick ud = todo
+tick (UpDownUndefined1 x) = UpDownUndefined1 (x+1)
+tick (UpDownUndefined2 x) = UpDownUndefined2 (x-1) 
 
 -- toggle changes an increasing counter into a decreasing counter and
 -- vice versa
 toggle :: UpDown -> UpDown
-toggle ud = todo
-
+toggle (UpDownUndefined1 x) = UpDownUndefined2 x
+toggle (UpDownUndefined2 x)= UpDownUndefined1 x
 ------------------------------------------------------------------------------
 -- Ex 8: you'll find a Color datatype below. It has the three basic
 -- colours Red, Green and Blue, and two color transformations, Mix and
