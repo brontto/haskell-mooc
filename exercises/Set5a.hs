@@ -346,7 +346,9 @@ inc (O b) = I b
 inc (I b) = O (inc b)
 
 prettyPrint :: Bin -> String
-prettyPrint = todo
+prettyPrint End = ""
+prettyPrint (O b) = "0" ++ prettyPrint b
+prettyPrint (I b) = "1" ++ prettyPrint b
 
 fromBin :: Bin -> Int
 fromBin = todo
