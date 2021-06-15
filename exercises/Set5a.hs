@@ -203,7 +203,20 @@ data Color = Red | Green | Blue | Mix Color Color | Invert Color
   deriving Show
 
 rgb :: Color -> [Double]
-rgb col = todo
+rgb Red = [1,0,0]
+rgb Green = [0,1,0]
+rgb Blue = [0,0,1]
+rgb (Mix x y) = rgbmix (rgb x) (rgb y)
+rgb (Invert color) = rgbinvert (rgb color)
+
+rgbmix :: [Double] -> [Double] -> [Double]
+rgbmix (x:[]) (y:[]) = (x+y)/2 : []
+rgbmix (x:xs) (y:ys) = (x+y)/2 : rgbmix xs ys  
+
+rgbinvert :: [Double] -> [Double]
+rgbinvert (x:[]) = 1-x : []
+rgbinvert (x:xs) = 1-x : rgbinvert xs  
+
 
 ------------------------------------------------------------------------------
 -- Ex 9: define a parameterized datatype OneOrTwo that contains one or
@@ -213,6 +226,8 @@ rgb col = todo
 --   One True         ::  OneOrTwo Bool
 --   Two "cat" "dog"  ::  OneOrTwo String
 
+data OneOrTwo a = One a | Two a a
+  deriving Show
 
 ------------------------------------------------------------------------------
 -- Ex 10: define a recursive datatype KeyVals for storing a set of
@@ -233,14 +248,16 @@ rgb col = todo
 -- Also define the functions toList and fromList that convert between
 -- KeyVals and lists of pairs.
 
-data KeyVals k v = KeyValsUndefined
+data KeyVals k v = Empty | Pair k v (KeyVals k v) 
   deriving Show
 
 toList :: KeyVals k v -> [(k,v)]
-toList = todo
+toList Empty = []
+toList (Pair k v kv) = (k,v) : toList kv  
 
 fromList :: [(k,v)] -> KeyVals k v
-fromList = todo
+fromList [] = Empty
+fromList ((k,v):list) = Pair k v (fromList list)
 
 ------------------------------------------------------------------------------
 -- Ex 11: The data type Nat is the so called Peano
@@ -257,10 +274,19 @@ data Nat = Zero | PlusOne Nat
   deriving (Show,Eq)
 
 fromNat :: Nat -> Int
-fromNat n = todo
+fromNat Zero = 0
+fromNat (PlusOne nat) = 1 + fromNat nat
 
 toNat :: Int -> Maybe Nat
-toNat z = todo
+toNat 0 = Just Zero
+toNat z
+    |z < 0 = Nothing
+    |otherwise = Just (natReq z) 
+
+
+natReq :: Int -> Nat
+natReq 0 = Zero
+natReq z = PlusOne (natReq (z-1))
 
 ------------------------------------------------------------------------------
 -- Ex 12: While pleasingly simple in its definition, the Nat datatype is not
