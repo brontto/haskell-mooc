@@ -351,7 +351,15 @@ prettyPrint (O b) = "0" ++ prettyPrint b
 prettyPrint (I b) = "1" ++ prettyPrint b
 
 fromBin :: Bin -> Int
-fromBin = todo
+fromBin End = 0
+fromBin (O b) = binhelper (O b) 1
+fromBin (I b) = binhelper (I b) 1
+
+binhelper :: Bin -> Int -> Int
+binhelper End _ = 0
+binhelper (O b) x = binhelper b (x*2)
+binhelper (I b) x = (x) + binhelper b (x*2) 
 
 toBin :: Int -> Bin
-toBin = todo
+toBin 0 = O End
+toBin x = inc (toBin (x-1))
