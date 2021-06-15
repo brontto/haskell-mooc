@@ -16,7 +16,7 @@ data Tree a = Empty | Node a (Tree a) (Tree a)
 
 valAtRoot :: Tree a -> Maybe a
 valAtRoot Empty = Nothing
-valAtRoot (Node a t t') = Just a
+valAtRoot (Node a _ _) = Just a
 
 ------------------------------------------------------------------------------
 -- Ex 2: compute the size of a tree, that is, the number of Node
@@ -28,7 +28,7 @@ valAtRoot (Node a t t') = Just a
 
 treeSize :: Tree a -> Int
 treeSize Empty = 0
-treeSize (Node a t t') = 1 + treeSize t + treeSize t'
+treeSize (Node _ t t') = 1 + treeSize t + treeSize t'
 
 ------------------------------------------------------------------------------
 -- Ex 3: get the largest value in a tree of positive Ints. The
@@ -40,8 +40,7 @@ treeSize (Node a t t') = 1 + treeSize t + treeSize t'
 
 treeMax :: Tree Int -> Int
 treeMax Empty = 0
-treeMax (Node a t t') = if a > go (treeMax t) (treeMax t') then a else go (treeMax t) (treeMax t')
-  where go a b = if a > b then a else b
+treeMax (Node a t t') = maximum [a, treeMax t, treeMax t']
 
 ------------------------------------------------------------------------------
 -- Ex 4: implement a function that checks if all tree values satisfy a
@@ -54,11 +53,7 @@ treeMax (Node a t t') = if a > go (treeMax t) (treeMax t') then a else go (treeM
 
 allValues :: (a -> Bool) -> Tree a -> Bool
 allValues condition Empty = True
-allValues condition (Node a t t') 
-  |condition a == False = False
-  |allValues condition t == False = False
-  |allValues condition t' == False = False
-  |otherwise = True
+allValues condition (Node a t t') = condition a && allValues condition t && allValues condition t'
 
 ------------------------------------------------------------------------------
 -- Ex 5: implement map for trees.
