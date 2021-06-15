@@ -206,16 +206,9 @@ rgb :: Color -> [Double]
 rgb Red = [1,0,0]
 rgb Green = [0,1,0]
 rgb Blue = [0,0,1]
-rgb (Mix x y) = rgbmix (rgb x) (rgb y)
-rgb (Invert color) = rgbinvert (rgb color)
-
-rgbmix :: [Double] -> [Double] -> [Double]
-rgbmix (x:[]) (y:[]) = (x+y)/2 : []
-rgbmix (x:xs) (y:ys) = (x+y)/2 : rgbmix xs ys  
-
-rgbinvert :: [Double] -> [Double]
-rgbinvert (x:[]) = 1-x : []
-rgbinvert (x:xs) = 1-x : rgbinvert xs  
+rgb (Mix x y) = zipWith avg (rgb x) (rgb y)
+    where avg x y = (x+y)/2
+rgb (Invert color) = map (1-) $ rgb color
 
 
 ------------------------------------------------------------------------------
@@ -282,11 +275,8 @@ toNat 0 = Just Zero
 toNat z
     |z < 0 = Nothing
     |otherwise = Just (natReq z) 
-
-
-natReq :: Int -> Nat
-natReq 0 = Zero
-natReq z = PlusOne (natReq (z-1))
+    where natReq 0 = Zero
+          natReq z = PlusOne (natReq (z-1))
 
 ------------------------------------------------------------------------------
 -- Ex 12: While pleasingly simple in its definition, the Nat datatype is not
