@@ -25,17 +25,10 @@ instance Eq Country where
 -- Remember minimal complete definitions!
 
 instance Ord Country where
-  compare x y 
-      | x == y = EQ
-      | x == Finland || y == Switzerland = LT
-      | otherwise = GT
-  x <= y = compare x y /= GT
-  min x y
-      |x <= y = x
-      |otherwise = y
-  max x y
-      |x <= y = y
-      |otherwise = x
+  Finland <= Norway = True
+  Finland <= Switzerland = True
+  Norway <= Switzerland = True
+  x <= y = x == y
 
 ------------------------------------------------------------------------------
 -- Ex 3: Implement an Eq instance for the type Name which contains a String.
@@ -107,11 +100,11 @@ instance Price Egg where
 -- price [Nothing, Nothing, Just (Milk 1), Just (Milk 2)]  ==> 45
 
 
-instance (Price a) => Price (Maybe a) where
+instance Price a => Price (Maybe a) where
   price Nothing = 0
   price (Just a) = price a
 
-instance (Price a) => Price [a] where 
+instance Price a => Price [a] where 
   price [] = 0
   price (x:xs) = price x + price xs
 
@@ -128,13 +121,9 @@ data Number = Finite Integer | Infinite
   deriving (Show,Eq)
 
 instance Ord Number where
-  compare (Finite x) (Finite y) 
-      |x == y = EQ
-      |x <= y = LT
-      |otherwise = GT
-  compare Infinite Infinite = EQ
-  compare Infinite _ = GT
-  compare _ Infinite = LT
+  (Finite x) <= (Finite y) = x <= y
+  _ <= Infinite = True
+  _ <= _ = False
 
 ------------------------------------------------------------------------------
 -- Ex 8: rational numbers have a numerator and a denominator that are
@@ -202,14 +191,22 @@ simplify (RationalNumber a b) = RationalNumber (a `div` j) (b `div` j)
 --   signum (RationalNumber 0 2)             ==> RationalNumber 0 1
 
 instance Num RationalNumber where
-  (RationalNumber a b) + (RationalNumber c d) = simplify $ RationalNumber (a*d+b*c) (b*d) 
-  (RationalNumber a b) * (RationalNumber c d) = simplify $ RationalNumber (a*c) (b*d)
+  
+  (RationalNumber a b) + (RationalNumber c d) = 
+    simplify $ RationalNumber (a*d+b*c) (b*d) 
+  
+  (RationalNumber a b) * (RationalNumber c d) = 
+    simplify $ RationalNumber (a*c) (b*d)
+  
   abs (RationalNumber a b) = simplify $ RationalNumber (abs a) b
+  
   signum (RationalNumber a b)
       |a > 0 = RationalNumber 1 1
       |a < 0 = RationalNumber (-1) 1 
       |otherwise = RationalNumber 0 1
+  
   fromInteger q = RationalNumber q 1
+  
   negate (RationalNumber a b) = RationalNumber (0-a) b
 
 ------------------------------------------------------------------------------
@@ -231,11 +228,12 @@ class Addable a where
 
 instance Addable Integer where
   zero = 0
-  add a b = a+b
+  add = (+)
 
 instance Addable [a] where
   zero = []
-  add a b = a ++ b
+  add = (++)
+
 
 ------------------------------------------------------------------------------
 -- Ex 12: cycling. Implement a type class Cycle that contains a
@@ -271,7 +269,7 @@ class Cycle a where
   step :: a -> a
   stepMany :: Int -> a -> a
   stepMany c x
-      |c <= 0 = x 
+      |c <= 0 =  x 
       |otherwise = stepMany (c-1) (step x)  
 
 instance Cycle Color where
@@ -279,9 +277,6 @@ instance Cycle Color where
       |x == Red = Green
       |x == Green = Blue
       |otherwise = Red 
-  stepMany c x   
-      |c <= 0 = x
-      |otherwise = stepMany (c-1) (step x) 
 
 instance Cycle Suit where
   step a
@@ -289,6 +284,3 @@ instance Cycle Suit where
     |a == Spade = Diamond
     |a == Diamond = Heart
     |otherwise = Club
-  stepMany c x
-    |c <= 0 = x
-    |otherwise = stepMany (c-1) (step x)
