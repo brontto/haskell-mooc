@@ -94,10 +94,20 @@ add x (Set y) = if member x (Set y) then Set y else Set (insert x y)
 data Event = AddEggs | AddFlour | AddSugar | Mix | Bake
   deriving (Eq,Show)
 
-data State = Start | Error | Finished
+data State = Start | Error | Finished | Egged | Sugared | Floured | SugarFloured | Mixed
   deriving (Eq,Show)
 
-step = todo
+step :: State -> Event -> State
+step Start x = if x == AddEggs then Egged else Error
+step Egged AddFlour = Floured
+step Egged AddSugar = Sugared
+step Egged _ = Error
+step Sugared AddFlour = SugarFloured
+step Floured AddSugar = SugarFloured
+step SugarFloured Mix = Mixed
+step Mixed Bake = Finished
+step Finished _ = Finished
+step _ _ = Error  
 
 -- do not edit this
 bake :: [Event] -> State
@@ -115,13 +125,16 @@ bake events = go Start events
 --   average (1.0 :| [2.0,3.0])  ==>  2.0
 
 average :: Fractional a => NonEmpty a -> a
-average = todo
+average (x :| []) = x
+average xs = (foldr (+) 0 xs) / fromIntegral (length xs)
+
 
 ------------------------------------------------------------------------------
 -- Ex 5: reverse a NonEmpty list.
 
 reverseNonEmpty :: NonEmpty a -> NonEmpty a
-reverseNonEmpty = todo
+reverseNonEmpty (x :| []) = (x :| [])
+reverseNonEmpty (x :| xs) = (head (reverse xs) :| tail (reverse (x:xs)))
 
 ------------------------------------------------------------------------------
 -- Ex 6: implement Semigroup instances for the Distance, Time and
