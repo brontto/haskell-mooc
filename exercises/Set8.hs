@@ -108,6 +108,7 @@ colorToHex (Color r g b) = showHex r ++ showHex g ++ showHex b
 
 getPixel :: Picture -> Int -> Int -> String
 getPixel (Picture f) x y = colorToHex (f (Coord x y))
+
 renderList :: Picture -> (Int,Int) -> (Int,Int) -> [[String]]
 renderList picture (minx,maxx) (miny,maxy) =
   [[getPixel picture x y | x <- [minx..maxx]] | y <- [miny..maxy]]
@@ -133,7 +134,10 @@ renderListExample = renderList justADot (9,11) (9,11)
 --      ["000000","000000","000000"]]
 
 dotAndLine :: Picture
-dotAndLine = todo
+dotAndLine = Picture f
+  where f (Coord x y) | x == 3 && y == 4 = white
+                      | y == 8 = pink
+                      | otherwise = black
 ------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -166,10 +170,13 @@ dotAndLine = todo
 --          ["7f0000","7f0000","7f0000"]]
 
 blendColor :: Color -> Color -> Color
-blendColor = todo
+blendColor (Color a b c) (Color a1 b1 c1) = Color (go (a+a1)) (go (b+b1)) (go (c+c1))
+    where go color = div color 2 
 
 combine :: (Color -> Color -> Color) -> Picture -> Picture -> Picture
-combine = todo
+combine f (Picture a) (Picture b) = 
+  Picture (\coord -> f (a coord) (b coord))
+
 
 ------------------------------------------------------------------------------
 
@@ -230,7 +237,8 @@ exampleCircle = fill red (circle 80 100 200)
 --        ["000000","000000","000000","000000","000000","000000"]]
 
 rectangle :: Int -> Int -> Int -> Int -> Shape
-rectangle x0 y0 w h = todo
+rectangle x0 y0 w h = Shape f
+    where f (Coord cx cy) = cx >= x0 && cx < x0+w && cy >= y0 && cy < y0+h
 ------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -246,10 +254,12 @@ rectangle x0 y0 w h = todo
 -- shape.
 
 union :: Shape -> Shape -> Shape
-union = todo
+union x y = Shape f 
+    where f (Coord cx cy) = contains x cx cy || contains y cx cy
 
 cut :: Shape -> Shape -> Shape
-cut = todo
+cut x y = Shape f 
+    where f (Coord cx cy) = not (contains x cx cy && contains y cx cy)
 ------------------------------------------------------------------------------
 
 -- Here's a snowman, built using union from circles and rectangles.
@@ -277,7 +287,10 @@ exampleSnowman = fill white snowman
 --        ["000000","000000","000000"]]
 
 paintSolid :: Color -> Shape -> Picture -> Picture
-paintSolid color shape base = todo
+paintSolid color shape (Picture base) = Picture f
+  where f (Coord cx cy) | contains shape cx cy = color
+                        | otherwise = base (Coord cx cy)
+
 ------------------------------------------------------------------------------
 
 allWhite :: Picture
@@ -322,7 +335,9 @@ stripes a b = Picture f
 --       ["000000","000000","000000","000000","000000"]]
 
 paint :: Picture -> Shape -> Picture -> Picture
-paint pat shape base = todo
+paint (Picture pat) shape (Picture base) = Picture f 
+    where f (Coord cx cy) | contains shape cx cy = pat (Coord cx cy)
+                          | otherwise = base (Coord cx cy)
 ------------------------------------------------------------------------------
 
 -- Here's a patterned version of the snowman example. See it by running:
@@ -339,6 +354,12 @@ examplePatterns = (paint (solid black) hat . paint (stripes red yellow) legs . p
 
 flipCoordXY :: Coord -> Coord
 flipCoordXY (Coord x y) = (Coord y x)
+
+flipCoordX :: Coord -> Coord
+flipCoordX (Coord x y) = (Coord (0-x) y)
+
+flipCoordY :: Coord -> Coord
+flipCoordY (Coord x y) = (Coord x (0-y))
 
 -- Flip a picture by switching x and y coordinates
 flipXY :: Picture -> Picture
@@ -385,19 +406,23 @@ xy = Picture f
 data Fill = Fill Color
 
 instance Transform Fill where
-  apply = todo
+  apply (Fill col) (Picture pic) = Picture (\coord -> col)
 
 data Zoom = Zoom Int
   deriving Show
 
 instance Transform Zoom where
-  apply = todo
+  apply (Zoom zo) (Picture pic) = Picture (pic . zoomCoord zo)
 
 data Flip = FlipX | FlipY | FlipXY
   deriving Show
 
 instance Transform Flip where
-  apply = todo
+  apply FlipX  (Picture pic) = Picture (pic . flipCoordX)
+  apply FlipY  (Picture pic) = Picture (pic . flipCoordY)
+  apply FlipXY (Picture pic) = Picture (pic . flipCoordXY)
+
+
 ------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -413,7 +438,7 @@ data Chain a b = Chain a b
   deriving Show
 
 instance Transform (Chain a b) where
-  apply = todo
+  apply (Chain a b) pic = apply a (apply b pic)
 ------------------------------------------------------------------------------
 
 -- Now we can redefine largeVerticalStripes using the above Transforms.
