@@ -10,6 +10,7 @@
 
 module Set9a where
 
+import Data.Char
 import Data.List
 import Data.Ord
 
@@ -137,6 +138,8 @@ changeCode = todo
 -- instance for Text that ignores all white space (space characters
 -- and line returns).
 --
+-- Hint: Data.Char.isSpace
+--
 -- Examples
 --   Text "abc"  == Text "abc"      ==> True
 --   Text "a bc" == Text "ab  c\n"  ==> True
@@ -162,6 +165,10 @@ data Text = Text String
 -- The ordering of the output doesn't matter.
 --
 -- Hint: remember the function `lookup` from Prelude?
+--
+-- Note! The order of arguments to `compose` is the other way around
+-- compared to e.g. (.): `compose f g` should apply `f` first, then
+-- `g`, but `f.g` applies `g` first, then `f`.
 --
 -- Examples:
 --   composing two mappings of size 1:
