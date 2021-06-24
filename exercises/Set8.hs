@@ -171,10 +171,10 @@ dotAndLine = Picture f
 
 blendColor :: Color -> Color -> Color
 blendColor (Color a b c) (Color a1 b1 c1) = Color (go (a+a1)) (go (b+b1)) (go (c+c1))
-    where go color = div color 2 
+    where go color = div color 2
 
 combine :: (Color -> Color -> Color) -> Picture -> Picture -> Picture
-combine f (Picture a) (Picture b) = 
+combine f (Picture a) (Picture b) =
   Picture (\coord -> f (a coord) (b coord))
 
 
@@ -254,11 +254,11 @@ rectangle x0 y0 w h = Shape f
 -- shape.
 
 union :: Shape -> Shape -> Shape
-union x y = Shape f 
+union x y = Shape f
     where f (Coord cx cy) = contains x cx cy || contains y cx cy
 
 cut :: Shape -> Shape -> Shape
-cut x y = Shape f 
+cut x y = Shape f
     where f (Coord cx cy) = not (contains x cx cy && contains y cx cy)
 ------------------------------------------------------------------------------
 
@@ -335,7 +335,7 @@ stripes a b = Picture f
 --       ["000000","000000","000000","000000","000000"]]
 
 paint :: Picture -> Shape -> Picture -> Picture
-paint (Picture pat) shape (Picture base) = Picture f 
+paint (Picture pat) shape (Picture base) = Picture f
     where f (Coord cx cy) | contains shape cx cy = pat (Coord cx cy)
                           | otherwise = base (Coord cx cy)
 ------------------------------------------------------------------------------
@@ -476,7 +476,30 @@ data Blur = Blur
   deriving Show
 
 instance Transform Blur where
-  apply = todo
+  apply Blur (Picture a) = Picture f
+      where f (Coord x y) = Color (redpart (Coord x y) (Picture a)) (greenpart (Coord x y) (Picture a)) (bluepart (Coord x y) (Picture a))
+
+redpart :: Coord -> Picture -> Int
+redpart (Coord x y) (Picture a) = div (getRed (a (Coord x y)) +
+                            getRed (a (Coord (x+1) y)) +
+                            getRed (a (Coord x (y+1))) +
+                            getRed (a (Coord (x-1) y)) +
+                            getRed (a (Coord x (y-1)))) 5
+
+greenpart :: Coord -> Picture -> Int
+greenpart (Coord x y) (Picture a) = div (getGreen (a (Coord x y)) +
+                                      getGreen (a (Coord (x+1) y)) +
+                                      getGreen (a (Coord x (y+1))) +
+                                      getGreen (a (Coord (x-1) y)) +
+                                      getGreen (a (Coord x (y-1)))) 5
+
+bluepart :: Coord -> Picture -> Int
+bluepart (Coord x y) (Picture a) = div (getBlue (a (Coord x y)) +
+                                      getBlue (a (Coord (x+1) y)) +
+                                      getBlue (a (Coord x (y+1))) +
+                                      getBlue (a (Coord (x-1) y)) +
+                                      getBlue (a (Coord x (y-1)))) 5
+
 ------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -494,7 +517,9 @@ data BlurMany = BlurMany Int
   deriving Show
 
 instance Transform BlurMany where
-  apply = todo
+  apply (BlurMany 0) (Picture pic) = Picture pic 
+  apply (BlurMany x) (Picture pic) = apply Blur (apply (BlurMany (x-1)) (Picture pic))
+
 ------------------------------------------------------------------------------
 
 -- Here's a blurred version of our original snowman. See it by running
