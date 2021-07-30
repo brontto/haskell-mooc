@@ -15,6 +15,7 @@ import Data.List
 import Data.Ord
 
 import Mooc.Todo
+import Data.Either
 
 ------------------------------------------------------------------------------
 -- Ex 1: Implement a function workload that takes in the number of
@@ -72,7 +73,7 @@ countValid (x:xs) = if valid x then 1 + countValid xs else countValid xs
 
 repeated :: Eq a => [a] -> Maybe a
 repeated [] = Nothing
-repeated xs = todo 
+repeated (x:xs) = Just x
 
 
 ------------------------------------------------------------------------------
@@ -95,8 +96,10 @@ repeated xs = todo
 --     ==> Left "no data"
 
 sumSuccess :: [Either String Int] -> Either String Int
-sumSuccess = todo
-
+sumSuccess [] = Left "no data"
+sumSuccess xs = foo (rights xs) where
+    foo [] = Left "no data"  
+    foo xs = Right (sum xs)
 ------------------------------------------------------------------------------
 -- Ex 6: A combination lock can either be open or closed. The lock
 -- also remembers a code. A closed lock can only be opened with the
