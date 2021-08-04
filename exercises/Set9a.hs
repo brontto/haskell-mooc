@@ -17,6 +17,7 @@ import Data.Ord
 import Mooc.Todo
 import Data.Either
 
+
 ------------------------------------------------------------------------------
 -- Ex 1: Implement a function workload that takes in the number of
 -- exercise a student has to finish, and another number that counts
@@ -73,7 +74,8 @@ countValid (x:xs) = if valid x then 1 + countValid xs else countValid xs
 
 repeated :: Eq a => [a] -> Maybe a
 repeated [] = Nothing
-repeated (x:xs) = Just x
+repeated [x] = Nothing
+repeated (x:xs) = if x == head xs then Just x else repeated xs
 
 
 ------------------------------------------------------------------------------
@@ -98,7 +100,7 @@ repeated (x:xs) = Just x
 sumSuccess :: [Either String Int] -> Either String Int
 sumSuccess [] = Left "no data"
 sumSuccess xs = foo (rights xs) where
-    foo [] = Left "no data"  
+    foo [] = Left "no data"
     foo xs = Right (sum xs)
 ------------------------------------------------------------------------------
 -- Ex 6: A combination lock can either be open or closed. The lock
@@ -120,30 +122,34 @@ sumSuccess xs = foo (rights xs) where
 --   isOpen (open "0000" (lock (changeCode "0000" (open "1234" aLock)))) ==> True
 --   isOpen (open "1234" (lock (changeCode "0000" (open "1234" aLock)))) ==> False
 
-data Lock = LockUndefined
+data Lock = Locked String | Unlocked String
   deriving Show
 
 -- aLock should be a locked lock with the code "1234"
 aLock :: Lock
-aLock = todo
+aLock = Locked "1234"
 
 -- isOpen returns True if the lock is open
 isOpen :: Lock -> Bool
-isOpen = todo
+isOpen (Locked x) = False
+isOpen (Unlocked x) = True
 
 -- open tries to open the lock with the given code. If the code is
 -- wrong, nothing happens.
 open :: String -> Lock -> Lock
-open = todo
+open x (Locked y) = if x == y then Unlocked y else Locked y
+open x (Unlocked y) = Unlocked y
 
 -- lock closes a lock. If the lock is already closed, nothing happens.
 lock :: Lock -> Lock
-lock = todo
+lock (Unlocked x) = Locked x
+lock (Locked x) = Locked x
 
 -- changeCode changes the code of an open lock. If the lock is closed,
 -- nothing happens.
 changeCode :: String -> Lock -> Lock
-changeCode = todo
+changeCode y (Unlocked x) = Unlocked y
+changeCode y (Locked x) = Locked x
 
 ------------------------------------------------------------------------------
 -- Ex 7: Here's a type Text that just wraps a String. Implement an Eq
@@ -160,6 +166,10 @@ changeCode = todo
 
 data Text = Text String
   deriving Show
+
+
+instance Eq Text where
+  (Text x) == (Text y) = filter (not . isSpace) x == filter (not . isSpace) y
 
 
 ------------------------------------------------------------------------------
