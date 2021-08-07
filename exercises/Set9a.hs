@@ -204,7 +204,11 @@ instance Eq Text where
 --       ==> [("a",1),("b",2)]
 
 compose :: (Eq a, Eq b) => [(a,b)] -> [(b,c)] -> [(a,c)]
-compose = todo
+compose [] _ = []
+compose ((x,y):xs) ys = foo x (lookup y ys) ++ compose xs ys
+    where foo x (Just y) = [(x,y)]
+          foo x Nothing = []
+
 
 ------------------------------------------------------------------------------
 -- Ex 9: Reorder a list using an [(Int,Int)] mapping.
@@ -242,4 +246,17 @@ compose = todo
 type Permutation = [(Int,Int)]
 
 permute :: Permutation -> [a] -> [a]
-permute = todo
+permute [] oth = oth
+permute _ [x] = [x]
+permute xs oth = wrapper (helper2 xs oth []) (length xs-1)
+
+wrapper :: [(Int, a)] -> Int -> [a]
+wrapper xs 0 = foo (lookup 0 xs)
+wrapper xs n = wrapper xs (n-1) ++ foo (lookup n xs) 
+ 
+foo (Just x) = [x]
+foo Nothing = []
+
+helper2 :: Permutation -> [a] -> [(Int, a)] -> [(Int, a)]
+helper2 [] oth ys = ys
+helper2 ((x,y):xs) oth ys = helper2 xs oth (ys ++ [(y, oth !! x)])
