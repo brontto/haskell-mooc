@@ -267,6 +267,8 @@ multiCompose xs fs = (head xs) $ multiCompose (tail xs) fs
 --   multiApp sum [(1+), (^3), (+2)] 1  ==>  6
 --   multiApp reverse [tail, take 2, reverse] "foo" ==> ["oof","fo","oo"]
 --   multiApp concat [take 3, reverse] "race" ==> "racecar"
+--   multiApp id [head, (!!2), last] "axbxc" ==> ['a','b','c'] i.e. "abc"
+--   multiApp sum [head, (!!2), last] [1,9,2,9,3] ==> 6
 
 multiApp f fx x = f $ multiApp' fx x
 
