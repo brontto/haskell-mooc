@@ -17,6 +17,7 @@ import Data.Ord
 import Mooc.Todo
 import Data.Either
 
+import qualified Data.Map as Map
 
 ------------------------------------------------------------------------------
 -- Ex 1: Implement a function workload that takes in the number of
@@ -203,8 +204,13 @@ instance Eq Text where
 --     compose [("a","alpha"),("b","beta"),("c","gamma")] [("alpha",1),("beta",2),("omicron",15)]
 --       ==> [("a",1),("b",2)]
 
-compose :: (Eq a, Eq b) => [(a,b)] -> [(b,c)] -> [(a,c)]
-compose = todo
+compose :: (Ord a, Ord b, Eq a, Eq b) => [(a,b)] -> [(b,c)] -> [(a,c)]
+compose [] _ = []
+compose ((a,b):xs) y = compose' a (Map.lookup b (Map.fromList y)) ++ compose xs y
+
+compose' :: a -> Maybe b -> [(a, b)]
+compose' x Nothing = []
+compose' x (Just y) = [(x, y)]
 
 ------------------------------------------------------------------------------
 -- Ex 9: Reorder a list using an [(Int,Int)] mapping.
@@ -242,4 +248,11 @@ compose = todo
 type Permutation = [(Int,Int)]
 
 permute :: Permutation -> [a] -> [a]
-permute = todo
+permute xs = permute' (mySort xs)
+
+permute' :: [(Int, Int)] -> [a] -> [a]
+permute' [] _ = []
+permute' ((a,b):xs) ys = ys !! a : permute xs ys
+
+mySort :: Ord b => [(a,b)] -> [(a,b)]
+mySort = sortOn snd 
