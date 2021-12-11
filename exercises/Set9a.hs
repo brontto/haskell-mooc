@@ -259,20 +259,22 @@ identity n = [0 .. n - 1]
 
 -- This function shows how permutations can be composed. Do not edit this
 -- function.
-multiply :: Permutation -> Permutation -> Permutation
-multiply p q = map (\i -> p !! (q !! i)) (identity (length p))
 
-permute :: Permutation -> [a] -> [a]
-<<<<<<< HEAD
-permute xs = permute' (mySort xs)
 
-permute' :: [(Int, Int)] -> [a] -> [a]
-permute' [] _ = []
-permute' ((a,b):xs) ys = ys !! a : permute xs ys
+-- multiply :: Permutation -> Permutation -> Permutation
+-- multiply p q = map (\i -> p !! (q !! i)) (identity (length p))
 
-mySort :: Ord b => [(a,b)] -> [(a,b)]
-mySort = sortOn snd 
-=======
+-- permute :: Permutation -> [a] -> [a]
+-- permute xs = permute' (mySort xs)
+
+-- permute' :: [(Int, Int)] -> [a] -> [a]
+-- permute' [] _ = []
+-- permute' ((a,b):xs) ys = ys !! a : permute xs ys
+
+-- mySort :: Ord b => [(a,b)] -> [(a,b)]
+-- mySort = sortOn snd 
+
+
 permute [] oth = oth
 permute _ [x] = [x]
 permute xs oth = wrapper (helper2 xs oth []) (length xs-1)
@@ -287,4 +289,3 @@ foo Nothing = []
 helper2 :: Permutation -> [a] -> [(Int, a)] -> [(Int, a)]
 helper2 [] oth ys = ys
 helper2 ((x,y):xs) oth ys = helper2 xs oth (ys ++ [(y, oth !! x)])
->>>>>>> 21596102d0b27fe2419ce64c8b3c59a96231c15e
