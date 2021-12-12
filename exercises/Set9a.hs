@@ -204,22 +204,22 @@ instance Eq Text where
 --     compose [("a","alpha"),("b","beta"),("c","gamma")] [("alpha",1),("beta",2),("omicron",15)]
 --       ==> [("a",1),("b",2)]
 
-<<<<<<< HEAD
-compose :: (Ord a, Ord b, Eq a, Eq b) => [(a,b)] -> [(b,c)] -> [(a,c)]
-compose [] _ = []
-compose ((a,b):xs) y = compose' a (Map.lookup b (Map.fromList y)) ++ compose xs y
 
-compose' :: a -> Maybe b -> [(a, b)]
-compose' x Nothing = []
-compose' x (Just y) = [(x, y)]
-=======
+-- compose :: (Ord a, Ord b, Eq a, Eq b) => [(a,b)] -> [(b,c)] -> [(a,c)]
+-- compose [] _ = []
+-- compose ((a,b):xs) y = compose' a (Map.lookup b (Map.fromList y)) ++ compose xs y
+
+-- compose' :: a -> Maybe b -> [(a, b)]
+-- compose' x Nothing = []
+-- compose' x (Just y) = [(x, y)]
+
 compose :: (Eq a, Eq b) => [(a,b)] -> [(b,c)] -> [(a,c)]
 compose [] _ = []
 compose ((x,y):xs) ys = foo x (lookup y ys) ++ compose xs ys
     where foo x (Just y) = [(x,y)]
           foo x Nothing = []
 
->>>>>>> 21596102d0b27fe2419ce64c8b3c59a96231c15e
+
 
 ------------------------------------------------------------------------------
 -- Ex 9: Reorder a list using a list of indices.
