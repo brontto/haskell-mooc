@@ -47,10 +47,10 @@ type Col   = Int
 type Coord = (Row, Col)
 
 nextRow :: Coord -> Coord
-nextRow (i,j) = (i+1, j)
+nextRow (i,j) = todo
 
 nextCol :: Coord -> Coord
-nextCol (i,j) = (i, j+1)
+nextCol (i,j) = todo
 
 --------------------------------------------------------------------------------
 -- Ex 2: Implement the function prettyPrint that, given the size of
