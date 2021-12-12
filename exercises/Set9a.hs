@@ -21,7 +21,7 @@ import qualified Data.Map as Map
 
 ------------------------------------------------------------------------------
 -- Ex 1: Implement a function workload that takes in the number of
--- exercise a student has to finish, and another number that counts
+-- exercises a student has to finish, and another number that counts
 -- the number of hours each exercise takes.
 --
 -- If the total number of hours needed for all exercises is over 100,
