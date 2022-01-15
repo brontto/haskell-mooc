@@ -138,17 +138,25 @@ makeRow n = "." ++ makeRow (n-1)
 --   sameAntidiag (500,5) (5,500) ==> True
 
 sameRow :: Coord -> Coord -> Bool
-sameRow (i,j) (k,l) = todo
+sameRow (i,j) (k,l) = i == k
 
 sameCol :: Coord -> Coord -> Bool
-sameCol (i,j) (k,l) = todo
+sameCol (i,j) (k,l) = j == l
 
 sameDiag :: Coord -> Coord -> Bool
-sameDiag (i,j) (k,l) = todo
+sameDiag (i,j) (k,l) 
+    | i == k && j == l = True
+    | i == k || j == l = False
+    | otherwise = if i > k then sameDiag (i-1, j-1) (k, l) else sameDiag (i, j) (k-1, l-1)
+
 
 sameAntidiag :: Coord -> Coord -> Bool
-sameAntidiag (i,j) (k,l) = todo
+sameAntidiag (i,j) (k,l) 
+    | i == k && j == l = True
+    | i == k || j == l = False
+    | otherwise        = sameDiag (0, i+j) (0, k+l)
 
+    
 --------------------------------------------------------------------------------
 -- Ex 4: In chess, a queen may capture another piece in the same row, column,
 -- diagonal, or antidiagonal in one step. This danger zone, where pieces can be
