@@ -3,6 +3,7 @@ module Set9b where
 import Mooc.Todo
 
 import Data.List
+import GHC.IO.Exception (stackOverflow)
 
 --------------------------------------------------------------------------------
 -- Ex 1: In this exercise set, we'll solve the N Queens problem step by step.
@@ -102,16 +103,16 @@ nextCol (i,j) = (i, j+1)
 
 prettyPrint :: Size -> [Coord] -> String
 prettyPrint n [] = makeBase n n
-prettyPrint n (x:xs) = addMark n (prettyPrint n xs) x  
+prettyPrint n (x:xs) = addMark n (prettyPrint n xs) x
 
-addMark :: Size -> String -> Coord -> String 
-addMark n base (i,j) = take ((i-1)*(n+1)+j-1) base ++ "Q" ++ drop ((i-1)*(n+1)+j) base 
+addMark :: Size -> String -> Coord -> String
+addMark n base (i,j) = take ((i-1)*(n+1)+j-1) base ++ "Q" ++ drop ((i-1)*(n+1)+j) base
 
-makeBase :: Size -> Int -> String 
+makeBase :: Size -> Int -> String
 makeBase n 0 = []
 makeBase n x = makeRow n ++ makeBase n (x-1)
 
-makeRow :: Size -> String 
+makeRow :: Size -> String
 makeRow 0 = "\n"
 makeRow n = "." ++ makeRow (n-1)
 
@@ -144,19 +145,19 @@ sameCol :: Coord -> Coord -> Bool
 sameCol (i,j) (k,l) = j == l
 
 sameDiag :: Coord -> Coord -> Bool
-sameDiag (i,j) (k,l) 
+sameDiag (i,j) (k,l)
     | i == k && j == l = True
     | i == k || j == l = False
     | otherwise = if i > k then sameDiag (i-1, j-1) (k, l) else sameDiag (i, j) (k-1, l-1)
 
 
 sameAntidiag :: Coord -> Coord -> Bool
-sameAntidiag (i,j) (k,l) 
+sameAntidiag (i,j) (k,l)
     | i == k && j == l = True
     | i == k || j == l = False
     | otherwise        = sameDiag (0, i+j) (0, k+l)
 
-    
+
 --------------------------------------------------------------------------------
 -- Ex 4: In chess, a queen may capture another piece in the same row, column,
 -- diagonal, or antidiagonal in one step. This danger zone, where pieces can be
@@ -211,7 +212,8 @@ type Candidate = Coord
 type Stack     = [Coord]
 
 danger :: Candidate -> Stack -> Bool
-danger = todo
+danger can [] = False
+danger can (x:xs) = sameRow can x || sameCol can x || sameDiag can x || sameAntidiag can x || danger can xs
 
 --------------------------------------------------------------------------------
 -- Ex 5: In this exercise, the task is to write a modified version of
@@ -246,7 +248,20 @@ danger = todo
 -- solution to this version. Any working solution is okay in this exercise.)
 
 prettyPrint2 :: Size -> Stack -> String
-prettyPrint2 = todo
+prettyPrint2 n xs = prettyPrint2' n xs (1,1)
+
+prettyPrint2' :: Size -> Stack -> Coord -> String
+prettyPrint2' n xs (i, j)
+    |i > n = []
+    |j == n =  queenOrDanger n xs (i,j) ++ "\n" ++ prettyPrint2' n xs (nextRow(i,j))
+    |otherwise  = queenOrDanger n xs (i,j) ++ prettyPrint2' n xs (nextCol(i,j))
+
+queenOrDanger :: Size -> Stack -> Coord -> String
+queenOrDanger n xs c
+    |elem c xs = "Q"
+    |danger c xs = "#"
+    |otherwise  = "."
+
 
 --------------------------------------------------------------------------------
 -- Ex 6: Now that we can check if a piece can be safely placed into a square in
@@ -291,7 +306,17 @@ prettyPrint2 = todo
 --     Q#######
 
 fixFirst :: Size -> Stack -> Maybe Stack
-fixFirst n s = todo
+fixFirst n [] = Nothing 
+fixFirst n (x:xs) 
+    |notOnBoard n x = Nothing
+    |not(danger x xs) = Just (x:xs)
+    |otherwise        = fixFirst n ((nextCol x):xs) 
+
+
+notOnBoard:: Size -> Coord -> Bool
+notOnBoard n (i, j) = i > n || j > n
+
+
 
 --------------------------------------------------------------------------------
 -- Ex 7: We need two helper functions for stack management.
@@ -313,10 +338,12 @@ fixFirst n s = todo
 -- Hint: Remember nextRow and nextCol? Use them!
 
 continue :: Stack -> Stack
-continue s = todo
+continue [] = []
+continue (x:xs) = nextRow x : x : xs
 
 backtrack :: Stack -> Stack
-backtrack s = todo
+backtrack (x:y:xs) = nextCol y : xs
+backtrack _ = []
 
 --------------------------------------------------------------------------------
 -- Ex 8: Let's take a step. Our algorithm solves the problem (in a
@@ -385,7 +412,8 @@ backtrack s = todo
 --     step 8 [(6,1),(5,4),(4,2),(3,5),(2,3),(1,1)] ==> [(5,5),(4,2),(3,5),(2,3),(1,1)]
 
 step :: Size -> Stack -> Stack
-step = todo
+step n (x:[]) = todo
+
 
 --------------------------------------------------------------------------------
 -- Ex 9: Let's solve our puzzle! The function finish takes a partial
