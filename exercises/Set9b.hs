@@ -308,7 +308,7 @@ queenOrDanger n xs c
 fixFirst :: Size -> Stack -> Maybe Stack
 fixFirst n [] = Nothing 
 fixFirst n (x:xs) 
-    |notOnBoard n x = Nothing
+    |notOnBoard n x   = Nothing
     |not(danger x xs) = Just (x:xs)
     |otherwise        = fixFirst n ((nextCol x):xs) 
 
@@ -412,8 +412,11 @@ backtrack _ = []
 --     step 8 [(6,1),(5,4),(4,2),(3,5),(2,3),(1,1)] ==> [(5,5),(4,2),(3,5),(2,3),(1,1)]
 
 step :: Size -> Stack -> Stack
-step n (x:[]) = todo
+step n xs = step' (fixFirst n xs) xs
 
+step' :: Maybe Stack -> Stack -> Stack
+step' (Just (y:ys)) (x:xs) = continue (y:xs)
+step' Nothing xs = backtrack xs
 
 --------------------------------------------------------------------------------
 -- Ex 9: Let's solve our puzzle! The function finish takes a partial
@@ -428,7 +431,9 @@ step n (x:[]) = todo
 -- solve the n queens problem.
 
 finish :: Size -> Stack -> Stack
-finish = todo
+finish n (x:xs)
+    |length (x:xs) == (n+1) = xs 
+    |otherwise = finish n (step n (x:xs)) 
 
 solve :: Size -> Stack
 solve n = finish n [(1,1)]
